@@ -14,3 +14,7 @@ we can start server using - npm run dev
 app.fetch("/notes/:index", (req, res)=>{
 notes[req.params.index].description = req.body.description
 })
+
+# express in not itself capable of reading or configuring the request body so we use middleware by -
+
+app.use(express.json());
