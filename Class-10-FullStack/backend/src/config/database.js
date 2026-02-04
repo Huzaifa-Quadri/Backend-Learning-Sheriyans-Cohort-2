@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 async function connecttoDb() {
   try {
     const uri = process.env.MongoDB_URL;
-    console.log(uri);
 
     if (!uri) {
       throw new Error("MongoDB_URL environment variable is not set");
