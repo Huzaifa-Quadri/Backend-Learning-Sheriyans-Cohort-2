@@ -58,7 +58,7 @@ app.delete("/notes/:id", async (req, res) => {
   }
 });
 
-app.patch("/notes/:id", async (req, res) => {
+app.patch("/notes/title/:id", async (req, res) => {
   try {
     const id = req.params.id;
 
@@ -67,10 +67,26 @@ app.patch("/notes/:id", async (req, res) => {
     await noteModel.findByIdAndUpdate(id, { title });
 
     res.status(200).json({
-      message: `Note of id : ${id} Updated Successfully `,
+      message: `Note's Title of id : ${id} Updated Successfully `,
     });
   } catch (e) {
-    res.send("Error in update note");
+    res.send("Error in update note's Title");
+  }
+});
+
+app.patch("/notes/desc/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const { description } = req.body;
+
+    await noteModel.findByIdAndUpdate(id, { description });
+
+    res.status(200).json({
+      message: `Note' Description of id : ${id} Updated Successfully `,
+    });
+  } catch (e) {
+    res.send("Error in update note's Description");
   }
 });
 
