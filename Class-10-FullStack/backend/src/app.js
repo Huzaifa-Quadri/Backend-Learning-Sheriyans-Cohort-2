@@ -1,0 +1,73 @@
+const express = require("express");
+const app = express();
+const noteModel = require("./models/note.model.js");
+const cors = require("cors");
+app.use(cors());
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.status(200).json({
+    message: "Welcome to notes Api with frontend",
+  });
+});
+
+app.post("/notes", async (req, res) => {
+  const { title, description } = req.body;
+  try {
+    await noteModel.create({
+      title: title,
+      description: description,
+    });
+
+    res.status(201).json({
+      message: "Note Saved Successfully",
+    });
+  } catch (e) {
+    res.send("Error in Saving Data");
+  }
+});
+
+app.get("/notes", async (req, res) => {
+  try {
+    const notes = await noteModel.find();
+
+    res.status(200).json({
+      message: "Notes : ",
+      notes,
+    });
+  } catch (e) {
+    res.send("Error in getting notes");
+  }
+});
+
+app.delete("/notes/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    await noteModel.findByIdAndDelete(id);
+
+    res.status(200).json({
+      message: `Note of id : ${id} Deleted Successfully `,
+    });
+  } catch (e) {
+    res.send("Error in deleting note");
+  }
+});
+
+app.patch("/notes/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const { title } = req.body;
+
+    await noteModel.findByIdAndUpdate(id, { title });
+
+    res.status(200).json({
+      message: `Note of id : ${id} Updated Successfully `,
+    });
+  } catch (e) {
+    res.send("Error in update note");
+  }
+});
+
+module.exports = app;
