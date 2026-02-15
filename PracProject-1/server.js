@@ -6,6 +6,6 @@ connecttoDb();
 
 app.listen(3000, () => {
   console.log(
-    "--------------------- Project 1 Started on Port 3000 -------------------------------",
+    "--------------------- Instagram Clone Project Started on Port 3000 -------------------------------",
   );
 });
