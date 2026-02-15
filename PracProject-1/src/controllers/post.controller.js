@@ -10,21 +10,8 @@ const client = new ImageKit({
 
 async function createPostController(req, res) {
   const { caption } = req.body;
-  const token = req.cookies.token;
 
-  if (!token) {
-    return res.status(401).json({
-      message: "Token not Provided, Un-authorized Access",
-    });
-  }
-  let decoded = null;
-  try {
-    decoded = jwt.verify(token, process.env.JWT_SECRET);
-  } catch (e) {
-    return res.status(401).json({
-      message: "Invalid Token!! User Not Authorized",
-    });
-  }
+  const userId = req.user.id;
 
   //* Upload to ImageKit
   const { url } = await client.files.upload({
@@ -36,7 +23,7 @@ async function createPostController(req, res) {
   const post = await postModel.create({
     caption: caption,
     imageUrl: url,
-    user: decoded.id,
+    user: userId,
   });
 
   res.status(201).json({
@@ -49,22 +36,7 @@ async function createPostController(req, res) {
 }
 
 async function getpostsController(req, res) {
-  const token = req.cookies.token;
-
-  if (!token) {
-    return res.status(401).json({
-      message: "Token not Provided, Un-authorized Access",
-    });
-  }
-  let decoded = null;
-  try {
-    decoded = jwt.verify(token, process.env.JWT_SECRET);
-  } catch (e) {
-    return res.status(401).json({
-      message: "Invalid Token!! User Not Authorized",
-    });
-  }
-  const userId = decoded.id;
+  const userId = req.user.id;
 
   const posts = await postModel.find({
     user: userId,
@@ -86,17 +58,8 @@ async function getpostsController(req, res) {
 
 async function getpostDetailController(req, res) {
   const postId = req.params.postId;
-  const token = req.cookies.token;
 
-  let decoded = null;
-  try {
-    decoded = jwt.verify(token, process.env.JWT_SECRET);
-  } catch (e) {
-    return res.status(401).json({
-      message: "Invalid Token!! User Not Authorized",
-    });
-  }
-  const userId = decoded.id;
+  const userId = req.user.id;
 
   // const post = await postModel.findOne({
   //   _id: postId,
