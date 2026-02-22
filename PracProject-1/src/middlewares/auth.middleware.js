@@ -13,9 +13,7 @@ function authentication(req, res, next) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // 3. Attach user to request (VERY IMPORTANT)
-    req.user = {
-      id: decoded.id,
-    };
+    req.user = decoded;
 
     // 4. Continue request lifecycle
     next();

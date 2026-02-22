@@ -8,13 +8,15 @@ app.use(cookieparser());
 
 const authRouter = require("./routes/auth.routes");
 const postRouter = require("./routes/post.routes");
+const userRouter = require("./routes/user.routes");
 
 app.use("/api/auth", authRouter);
 app.use("/api/posts", postRouter);
+app.use("/api/users", userRouter);
 
 app.get("/home", (req, res) => {
   res.status(200).json({
-    message: "Welcome to My Practice Project",
+    message: "Welcome to My Insta Clone Practice Project",
   });
 });
 
