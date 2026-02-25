@@ -1,6 +1,7 @@
 const postModel = require("../models/post.model");
 const ImageKit = require("@imagekit/nodejs");
 const { toFile } = require("@imagekit/nodejs");
+const likeModel = require("../models/like.model");
 
 const client = new ImageKit({
   privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
@@ -87,8 +88,36 @@ async function getpostDetailController(req, res) {
   });
 }
 
+async function likePostController(req, res) {
+  try {
+    const username = req.user.username;
+    const postId = req.params.postId;
+
+    const postExists = postModel.findById(postId);
+
+    if (!postExists) {
+      return res.status(404).json({
+        message: "Error : No Such Post Found",
+      });
+    }
+
+    const like = await likeModel.create({
+      post: postId,
+      user: username,
+    });
+
+    res.status(201).json({
+      message: "Post Liked Successfully",
+      like,
+    });
+  } catch (error) {
+    console.error("Error creating Like -> ", error);
+  }
+}
+
 module.exports = {
   createPostController,
   getpostsController,
   getpostDetailController,
+  likePostController,
 };

@@ -18,6 +18,13 @@ const followSchema = new mongoose.Schema(
       //* since going with username instead of id
       type: String,
     },
+
+    status: {
+      type: String,
+      enum: ["pending", "accepted", "rejected"],
+      default: "pending",
+      message: "Status can only be pending, accepted or rejected",
+    },
   },
   {
     timestamps: true,

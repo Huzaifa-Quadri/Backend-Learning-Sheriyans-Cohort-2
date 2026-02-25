@@ -25,4 +25,26 @@ userRouter.post(
   userController.unfollowuserController,
 );
 
+/**
+ * @route - POST/api/users/accept/:followReqId
+ * @description - Accept a follow request
+ * @access - private
+ */
+userRouter.post(
+  "/accept/:followReqId",
+  authentication,
+  userController.acceptFollowRequestController,
+);
+
+/**
+ * @route - POST/api/users/reject/:followReqId
+ * @description - Reject a follow request
+ * @access - private
+ */
+userRouter.post(
+  "/reject/:followReqId",
+  authentication,
+  userController.rejectFollowRequestController,
+);
+
 module.exports = userRouter;
