@@ -117,11 +117,32 @@ async function likePostController(req, res) {
 
 async function getFeedController(req, res) {
   try {
-    const posts = await postModel.find().populate("user"); //? Populate is used to get the data of the user who created the post
+    const user = req.user;
+
+    // const posts = await postModel.find().populate("user"); //Modified this for showing likes also on feed(logic starts below)
+    //? Populate is used to get the data of the user who created the post
     // * With this function, it will return the entire user object instead of just the user id
     //? Populate will only work if in schema we have mentioned the refrence of the model we want to populate with "ref" word
     //! It will also return password of the user which is not a good practice so we will handle that in model by making it unreadable
     //? If we want to populate more than one model, we can use populate("user", "name email")
+
+    const posts = await Promise.all(
+      (await postModel.find().populate("user").lean()).map(async (post) => {
+        /*
+         * TypeOf post => mongoose object (by default), so cant add a property like   'isLiked' here,
+          ? Hence we have to convert it to normal object by using lean() method
+         */
+        const isLiked = await likeModel.findOne({
+          post: post._id,
+          user: user.username,
+        });
+        post.isLiked = Boolean(isLiked); //SUing Boolean() as we only want true or false instead of all details(object)
+        //OR -->
+        // post.isLiked = !!isLiked;
+
+        return post;
+      }),
+    );
 
     res.status(200).json({
       message: "Feed posts fetched Successfully",
