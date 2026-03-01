@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import "../style/form.scss";
 import useAuth from "../hooks/useAuth";
 
 const Register = () => {
+  const navigate = useNavigate();
   const { handleRegister, loading, user } = useAuth();
 
   const [username, setUsername] = useState("");
@@ -18,6 +19,8 @@ const Register = () => {
     const registerUser = await handleRegister(username, email, password);
 
     console.log("Register Finished, User Registered : ", registerUser);
+
+    navigate("/");
   };
 
   if (loading) {

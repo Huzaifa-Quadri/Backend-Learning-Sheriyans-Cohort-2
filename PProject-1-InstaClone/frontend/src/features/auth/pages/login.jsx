@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import "../style/form.scss";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import useAuth from "../hooks/useAuth";
 
 const Login = () => {
+  const navigate = useNavigate();
   const { user, loading, handleLogin } = useAuth();
 
   const [username, setUsername] = useState("");
@@ -16,6 +17,8 @@ const Login = () => {
     const loggedInUser = await handleLogin(username, password);
 
     console.log("Login finished, User Logged in : ", loggedInUser);
+
+    navigate("/");
   };
 
   if (loading) {
