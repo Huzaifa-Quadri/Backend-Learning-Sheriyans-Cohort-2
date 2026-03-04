@@ -1,0 +1,42 @@
+.create-post-page {
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+
+      label {
+        cursor: pointer;
+        border: 1px solid #ccc;
+        width: 40rem;
+        height: 20rem;
+        padding: 0.5rem;
+        border-radius: 5px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 1.5rem;
+        svg {
+          width: 2.5rem;
+          height: 2.5rem;
+        }
+      }
+
+      input {
+        width: 40rem;
+        padding: 0.5rem 0.2rem;
+        border: 1px solid white;
+        background-color: #545353;
+        border-radius: 10px;
+        color: #fff;
+      }
+    }
+  }
+}
