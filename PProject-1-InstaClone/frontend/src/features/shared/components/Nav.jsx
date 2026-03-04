@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router";
 import "./Nav.scss";
 
+//This Navbar is made with AI
 const Nav = () => {
   const [isExpanded, setIsExpanded] = useState(false);
 

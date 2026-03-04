@@ -1,0 +1,15 @@
+.main-layout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+
+  .content-container {
+    flex-grow: 1;
+
+    width: 100%;
+    padding-left: var(--sidebar-width, 80px);
+    transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Added some padding to make content look good unconditionally */
+    box-sizing: border-box;
+  }
+}
