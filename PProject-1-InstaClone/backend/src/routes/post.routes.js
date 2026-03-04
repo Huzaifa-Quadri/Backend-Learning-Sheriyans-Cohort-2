@@ -53,6 +53,17 @@ postRouter.post(
 );
 
 /**
+ * @route - POST/api/posts/unlike/:postId
+ * @description - Unlike a post with Id Provided wihout duplication
+ * @access - private
+ */
+postRouter.post(
+  "/unlike/:postId",
+  authentication,
+  postController.unlikePostController,
+);
+
+/**
  * @route - GET/api/posts/feed
  * @description - Give all the posts created in DB
  * @access - private

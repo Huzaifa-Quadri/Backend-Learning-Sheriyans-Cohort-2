@@ -1,5 +1,10 @@
 import { useContext } from "react";
-import { getFeed, createPost } from "../services/post.api";
+import {
+  getFeed,
+  createPost,
+  likePost,
+  unlikePost,
+} from "../services/post.api";
 import { PostContext } from "../post.context";
 
 export const usePost = () => {
@@ -10,7 +15,7 @@ export const usePost = () => {
   const handleGetFeed = async () => {
     setLoading(true);
     const data = await getFeed();
-    setFeed(data.posts);
+    setFeed(data.posts.reverse()); //? Reversing the posts to show the latest post first
     setLoading(false);
   };
 
@@ -21,5 +26,47 @@ export const usePost = () => {
     setLoading(false);
   };
 
-  return { loading, post, feed, handleGetFeed, handleCreatePost };
+  const handleLikePost = async (postId) => {
+    // Optimistic Update locally
+    setFeed((currentFeed) =>
+      currentFeed.map((p) => (p._id === postId ? { ...p, isLiked: true } : p)),
+    );
+    try {
+      await likePost(postId);
+    } catch (e) {
+      // Revert if API fails
+      setFeed((currentFeed) =>
+        currentFeed.map((p) =>
+          p._id === postId ? { ...p, isLiked: false } : p,
+        ),
+      );
+    }
+  };
+
+  const handleUnlikePost = async (postId) => {
+    // Optimistic Update locally
+    setFeed((currentFeed) =>
+      currentFeed.map((p) => (p._id === postId ? { ...p, isLiked: false } : p)),
+    );
+    try {
+      await unlikePost(postId);
+    } catch (e) {
+      // Revert if API fails
+      setFeed((currentFeed) =>
+        currentFeed.map((p) =>
+          p._id === postId ? { ...p, isLiked: true } : p,
+        ),
+      );
+    }
+  };
+
+  return {
+    loading,
+    post,
+    feed,
+    handleGetFeed,
+    handleCreatePost,
+    handleLikePost,
+    handleUnlikePost,
+  };
 };

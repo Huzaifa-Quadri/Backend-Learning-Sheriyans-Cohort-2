@@ -93,7 +93,7 @@ async function likePostController(req, res) {
     const username = req.user.username;
     const postId = req.params.postId;
 
-    const postExists = postModel.findById(postId);
+    const postExists = await postModel.findById(postId);
 
     if (!postExists) {
       return res.status(404).json({
@@ -112,6 +112,40 @@ async function likePostController(req, res) {
     });
   } catch (error) {
     console.error("Error creating Like -> ", error);
+  }
+}
+
+async function unlikePostController(req, res) {
+  try {
+    const username = req.user.username;
+    const postId = req.params.postId;
+
+    const postExists = await postModel.findById(postId);
+
+    if (!postExists) {
+      return res.status(404).json({
+        message: "Error : No Such Post Found",
+      });
+    }
+
+    const isLiked = await likeModel.findOne({
+      post: postId,
+      user: username,
+    });
+
+    if (!isLiked) {
+      return res.status(404).json({
+        message: "You didnt like this post",
+      });
+    }
+
+    await likeModel.findOneAndDelete({ _id: isLiked._id });
+
+    res.status(200).json({
+      message: "Post Unliked Successfully",
+    });
+  } catch (error) {
+    console.error(error);
   }
 }
 
@@ -158,5 +192,6 @@ module.exports = {
   getpostsController,
   getpostDetailController,
   likePostController,
+  unlikePostController,
   getFeedController,
 };

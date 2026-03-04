@@ -20,4 +20,14 @@ async function createPost(imageFile, caption) {
   return response.data;
 }
 
-export { getFeed, createPost };
+async function likePost(postId) {
+  const response = await api.post(`/posts/like/${postId}`);
+  return response.data;
+}
+
+async function unlikePost(postId) {
+  const response = await api.post(`/posts/unlike/${postId}`);
+  return response.data;
+}
+
+export { getFeed, createPost, likePost, unlikePost };

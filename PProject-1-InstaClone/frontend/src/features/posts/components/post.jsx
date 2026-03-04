@@ -1,7 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
+// import { usePost } from "../hook/usePost";
 
-const Post = ({ user, post }) => {
-  console.log("Here is our Post : ", post);
+const Post = ({ user, post, handleLike, handleUnlike }) => {
+  // console.log("Here is our Post : ", post);
+
+  //! Cant use this hook here since it was cause large re-renders on liking posts(high resource usage), so we will use the context directly in feed page
+  // const {loading, handleLikePost, handleUnlikePost} = usePost();
+
+  const [isLiking, setIsLiking] = useState(false);
+
+  //? Optimistic UI Update Like logic handling all edge cases and errors
+  //Making sure duplicate clicks and API errors are handled
+  const onLikeToggle = async () => {
+    if (isLiking) return;
+    setIsLiking(true);
+    try {
+      if (post.isLiked) {
+        await handleUnlike(post._id);
+      } else {
+        await handleLike(post._id);
+      }
+    } finally {
+      setIsLiking(false);
+    }
+  };
+
   return (
     <div className="post">
       <div className="header">
@@ -20,7 +43,7 @@ const Post = ({ user, post }) => {
         <p className="post-time">2 hours ago</p>
         <div className="interaction-icons">
           <div className="left">
-            <button>
+            <button disabled={isLiking} onClick={onLikeToggle}>
               <svg
                 className={post.isLiked ? "liked" : ""}
                 xmlns="http://www.w3.org/2000/svg"
