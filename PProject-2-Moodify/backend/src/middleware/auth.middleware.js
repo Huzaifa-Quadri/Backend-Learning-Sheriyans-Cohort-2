@@ -1,6 +1,7 @@
 const blackListModel = require("../models/blacklist.model");
 const userModel = require("../models/user.model");
 const jwt = require("jsonwebtoken");
+const redis = require("../config/cache");
 
 async function authMiddleware(req, res, next) {
   const token = req.cookies.token;
@@ -11,13 +12,22 @@ async function authMiddleware(req, res, next) {
     });
   }
 
-  const tokenblacklisted = await blackListModel.findOne({
-    token,
-  });
+  // const tokenblacklisted = await blackListModel.findOne({
+  //   token,
+  // });
 
-  if (tokenblacklisted) {
+  // if (tokenblacklisted) {
+  //   return res.status(400).json({
+  //     message: "Token is BlackListed",
+  //   });
+  // }
+
+  //? Doing this faster with redis
+  const istokenBlacklisted = await redis.get(token);
+
+  if (istokenBlacklisted) {
     return res.status(400).json({
-      message: "Token is BlackListed",
+      message: "Token is already blacklisted; User is already logged out",
     });
   }
   try {

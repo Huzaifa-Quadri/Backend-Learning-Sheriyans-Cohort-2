@@ -2,6 +2,7 @@ const userModel = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const blackListModel = require("../models/blacklist.model");
+const redis = require("../config/cache");
 
 async function registerUserController(req, res) {
   const { username, email, password } = req.body;
@@ -127,9 +128,15 @@ async function logoutController(req, res) {
 
     res.clearCookie("token");
 
-    await blackListModel.create({
-      token,
-    });
+    // await blackListModel.create({
+    //   token,
+    // });
+
+    //* Using redis for faster logout/response time
+
+    redis.set(token, Date.now().toString(), "EX", 60 * 60);
+    //? Redis uses key value pair to store data, here token string is key and Date.now().toString() is value
+    //? EX to set expiry date
 
     res.status(200).json({
       message: "User Logged out Successfully",
