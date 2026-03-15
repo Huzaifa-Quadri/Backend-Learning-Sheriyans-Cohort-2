@@ -1,0 +1,84 @@
+@mixin flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin flex-col-centre {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid white;
+  border-radius: 10px;
+
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  form {
+    background-color: rgb(86, 66, 66);
+    // min-width: 30vw;
+    min-width: 25rem;
+    @include flex-col-centre();
+    border-radius: 1rem;
+    padding: 2rem 0;
+    gap: 1.5rem;
+
+    .form-group {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    input {
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      border: none;
+    }
+
+    button {
+      width: 20rem;
+      padding: 0.5rem 0.7rem;
+      border-radius: 10px;
+      background-color: rgb(238, 62, 9);
+      color: white;
+      border: none;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: rgb(240, 171, 60);
+        cursor: pointer;
+      }
+
+      &:active {
+        scale: 0.85;
+      }
+    }
+  }
+
+  p {
+    font-size: 1.2rem;
+    margin-top: 1rem;
+
+    a {
+      color: rgb(238, 62, 9);
+      text-decoration: none;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: rgb(240, 171, 60);
+      }
+    }
+  }
+}

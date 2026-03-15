@@ -1,11 +1,14 @@
 import React from "react";
-import FaceExpressionDetector from "./features/Expression/components/FaceExpressionDetector";
+import { RouterProvider } from "react-router";
+import { router } from "./app.routes";
+import "./shared/styles/styles.scss";
+import { AuthProvider } from "./features/auth/auth.context";
 
 const App = () => {
   return (
-    <div>
-      <FaceExpressionDetector />
-    </div>
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   );
 };
 
