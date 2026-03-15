@@ -1,17 +1,19 @@
-const mongoose = require("mongoose");
+//! NO Longer used as doing this with Redis database
 
-const blacklistSchema = new mongoose.Schema(
-  {
-    token: {
-      type: String,
-      required: [true, "Token is required"],
-      unique: [true, "Token should be unique"],
-    },
-  },
-  {
-    timestamps: true,
-  },
-);
-const blackListModel = mongoose.model("blacklist", blacklistSchema);
+// const mongoose = require("mongoose");
 
-module.exports = blackListModel;
+// const blacklistSchema = new mongoose.Schema(
+//   {
+//     token: {
+//       type: String,
+//       required: [true, "Token is required"],
+//       unique: [true, "Token should be unique"],
+//     },
+//   },
+//   {
+//     timestamps: true,
+//   },
+// );
+// const blackListModel = mongoose.model("blacklist", blacklistSchema);
+
+// module.exports = blackListModel;
