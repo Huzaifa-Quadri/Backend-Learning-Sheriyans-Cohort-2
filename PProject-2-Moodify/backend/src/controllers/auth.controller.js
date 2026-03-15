@@ -13,7 +13,7 @@ async function registerUserController(req, res) {
     });
 
     if (isAlreadyRegistered) {
-      return res.status(400).json({
+      return res.status(409).json({
         message: "User with same email or password already exists",
       });
     }

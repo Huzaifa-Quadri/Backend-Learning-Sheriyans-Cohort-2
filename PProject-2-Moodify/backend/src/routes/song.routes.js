@@ -17,4 +17,11 @@ songRouter.post(
   songController.uploadSongController,
 );
 
+/**
+ * @route - GET/api/songs/getSong
+ * @description - For fetching all the songs by mood
+ * @access - private
+ */
+songRouter.get("/getSong", authMiddleware, songController.getSongController);
+
 module.exports = songRouter;
