@@ -1,12 +1,72 @@
 import React from "react";
+import { useSong } from "../hooks/useSong";
 import "../style/FaceExpressionDetector.scss";
 
-export function ExpressionSidebar({ result, landmarkCoords }) {
-  const { finalExpression, allExpressions = [], rawScores = {} } = result;
+export function ExpressionSidebar({ result }) {
+  const { finalExpression, allExpressions = [] } = result;
+  const { song } = useSong({});
 
   return (
     <div className="sidebar">
-      {/* ── Expression Scores Chart ── */}
+      {/* ── Mood Playlist Section (Commented out per user request) ──
+      <div className="card playlistCard">
+        <h3 className="cardTitle">
+          <span style={{ fontSize: "16px" }}>🎵</span> Mood Playlist
+        </h3>
+        <div className="playlistItems">
+          {song ? (
+            <div className="playlistItem active">
+              <img src={song.posterUrl} alt={song.title} className="miniPoster" />
+              <div className="songInfo">
+                <span className="songTitle">{song.title}</span>
+                <span className="songMood">{song.mood} • Now Playing</span>
+              </div>
+              <div className="playingWave">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          ) : (
+            <p className="noSongs">No songs loaded yet...</p>
+          )}
+          <div className="playlistItem placeholder">
+            <div className="miniPoster ghost" />
+            <div className="songInfo">
+              <span className="songTitle ghost-text">More songs coming...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      */}
+
+      {/* ── Mood Playlist Section by Me*/}
+      <div className="playlist">
+        <h3 className="card-title">Mood Playlist</h3>
+        <div className="playlist-items">
+          {song ? (
+            <div className="song-item">
+              <img
+                src={song.posterUrl}
+                alt={song.title}
+                className="mini-poster"
+              />
+              <div className="song-info">
+                <span className="song-title">{song.title}</span>
+
+                <span className="song-mood">{song.mood}</span>
+              </div>
+              <div className="playing-wave">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          ) : (
+            <p className="no-songs">No songs loaded yet...</p>
+          )}
+        </div>
+      </div>
+
+      {/* ── Expression Confidence Chart (Bottom) ── */}
       <div className="card">
         <h3 className="cardTitle">
           <span style={{ fontSize: "16px" }}>📊</span> Expression Confidence
@@ -14,11 +74,8 @@ export function ExpressionSidebar({ result, landmarkCoords }) {
         {allExpressions.map((e) => {
           const isWinner = e.name === finalExpression;
           return (
-            <div key={e.name} className="barRow">
-              <span
-                className="barLabel"
-                style={{ color: isWinner ? "#fff" : undefined }}
-              >
+            <div key={e.name} className={`barRow ${isWinner ? "winner" : ""}`}>
+              <span className="barLabel">
                 {e.name}
               </span>
               <div className="barTrack">
@@ -26,59 +83,15 @@ export function ExpressionSidebar({ result, landmarkCoords }) {
                   className="barFill"
                   style={{
                     width: `${(e.score * 100).toFixed(0)}%`,
-                    background: isWinner
-                      ? "linear-gradient(90deg, #00f2fe, #4facfe)"
-                      : "linear-gradient(90deg, rgba(79, 172, 254, 0.4), rgba(0, 242, 254, 0.4))",
-                    boxShadow: isWinner
-                      ? "0 0 10px rgba(0, 242, 254, 0.5)"
-                      : "none",
                   }}
                 />
               </div>
-              <span
-                className="barValue"
-                style={{ color: isWinner ? "#00f2fe" : undefined }}
-              >
+              <span className="barValue">
                 {(e.score * 100).toFixed(0)}%
               </span>
             </div>
           );
         })}
-      </div>
-
-      {/* ── Raw Blendshapes ── */}
-      <div className="card">
-        <h3 className="cardTitle">
-          <span style={{ fontSize: "16px" }}>🔬</span> Blendshape Analysis
-        </h3>
-        <div className="scrollBox">
-          {Object.entries(rawScores)
-            .sort(([, a], [, b]) => b - a)
-            .slice(0, 25)
-            .map(([k, v]) => (
-              <div key={k} className="dataRow">
-                <span className="dataName">{k}</span>
-                <span className="dataValue">{v.toFixed(3)}</span>
-              </div>
-            ))}
-        </div>
-      </div>
-
-      {/* ── Landmark Coordinates ── */}
-      <div className="card">
-        <h3 className="cardTitle">
-          <span style={{ fontSize: "16px" }}>📍</span> Sparse Topology (Top 15)
-        </h3>
-        <div className="scrollBox">
-          {landmarkCoords.map((p) => (
-            <div key={p.idx} className="dataRow">
-              <span className="dataLabel">#{p.idx}</span>
-              <span className="dataText">
-                X:{p.x} &nbsp; Y:{p.y} &nbsp; Z:{p.z}
-              </span>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );

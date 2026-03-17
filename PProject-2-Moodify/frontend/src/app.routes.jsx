@@ -3,12 +3,13 @@ import Login from "./features/auth/pages/Login";
 import Register from "./features/auth/pages/Register";
 import App from "./App";
 import Protected from "./features/auth/components/Protected";
+import Home from "./features/Expression/pages/Home";
 export const router = createBrowserRouter([
   {
     path: "/",
     element: (
       <Protected>
-        <h1>Home</h1>
+        <Home />
       </Protected>
     ),
   },

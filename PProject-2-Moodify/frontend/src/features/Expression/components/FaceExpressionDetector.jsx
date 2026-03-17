@@ -3,7 +3,7 @@ import { useFaceExpression } from "../hooks/useFaceExpression";
 import { ExpressionSidebar } from "./ExpressionSidebar";
 import "../style/FaceExpressionDetector.scss";
 
-export default function FaceExpressionDetector() {
+export default function FaceExpressionDetector({ onCapture }) {
   const { isReady, videoRef, canvasRef, result, landmarkCoords } =
     useFaceExpression();
 
@@ -13,8 +13,12 @@ export default function FaceExpressionDetector() {
     if (result && isReady) {
       setCapturedData({
         result,
-        landmarkCoords,
       });
+
+      if (onCapture) {
+        //? Calling OnCapture function with expression string as argument
+        onCapture(result.finalExpression);
+      }
     }
   };
 
@@ -74,7 +78,6 @@ export default function FaceExpressionDetector() {
         {capturedData ? (
           <ExpressionSidebar
             result={capturedData.result}
-            landmarkCoords={capturedData.landmarkCoords}
           />
         ) : (
           <div className="sidebar emptyState">

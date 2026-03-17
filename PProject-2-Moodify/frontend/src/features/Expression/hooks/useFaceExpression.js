@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { FaceLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
-import { classifyExpressions } from "../utils/expressionclassifier";
+import { classifyExpressions } from "../utils/expressionClassifier";
 
 export function useFaceExpression() {
   const videoRef = useRef(null);
@@ -94,8 +94,8 @@ export function useFaceExpression() {
     if (results.faceLandmarks && results.faceLandmarks.length > 0) {
       const landmarks = results.faceLandmarks[0];
 
-      // Draw canvas 60fps immediately
-      drawLandmarks(landmarks);
+      // Draw canvas 60fps immediately - Disabled as per user request
+      // drawLandmarks(landmarks); 
 
       const now = performance.now();
       // Throttle React state to ~15fps (every 66ms) to stop extreme DOM lag
@@ -112,8 +112,19 @@ export function useFaceExpression() {
         );
 
         const blend = results.faceBlendshapes[0].categories;
-        const classification = classifyExpressions(blend);
-        classification.rawScores = smoothScores(classification.rawScores);
+        
+        // Convert to dictionary first
+        let currentScores = {};
+        blend.forEach((b) => {
+          currentScores[b.categoryName] = b.score;
+        });
+
+        // Smooth the scores BEFORE classification to prevent flickering
+        currentScores = smoothScores(currentScores);
+
+        // Pass the smoothed dictionary directly to the classifier
+        const classification = classifyExpressions(currentScores);
+        classification.rawScores = currentScores; // Attach for the UI to read
         setResult(classification);
       }
     }

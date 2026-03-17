@@ -13,7 +13,8 @@ const EXPRESSION_RULES = [
     calc: (s) => {
       const smile = avg(s.mouthSmileLeft, s.mouthSmileRight);
       const cheek = avg(s.cheekSquintLeft, s.cheekSquintRight);
-      return smile * 0.8 + cheek * 0.2 - (s.jawOpen ?? 0) * 0.3; // penalize if mouth is very open (should be laughing instead)
+      if (smile < 0.15) return 0; // Much lower threshold to trigger happiness
+      return smile * 2.0 + cheek * 1.0 - (s.jawOpen ?? 0) * 0.5;
     },
   },
   {
@@ -22,18 +23,8 @@ const EXPRESSION_RULES = [
       const smile = avg(s.mouthSmileLeft, s.mouthSmileRight);
       const jaw = s.jawOpen ?? 0;
       const cheek = avg(s.cheekSquintLeft, s.cheekSquintRight);
-      // Requires BOTH smile and open mouth
-      if (smile < 0.2 || jaw < 0.15) return 0;
-      return smile * 0.5 + jaw * 0.3 + cheek * 0.2;
-    },
-  },
-  {
-    name: "Mouth Open 😮",
-    calc: (s) => {
-      const jaw = s.jawOpen ?? 0;
-      const smile = avg(s.mouthSmileLeft, s.mouthSmileRight);
-      // High jaw open, but NOT smiling and NOT surprised
-      return jaw * 0.9 - smile * 0.6 - (s.browInnerUp ?? 0) * 0.5;
+      if (smile < 0.3 || jaw < 0.2) return 0;
+      return smile * 1.5 + jaw * 1.5 + cheek * 0.8;
     },
   },
   {
@@ -41,18 +32,31 @@ const EXPRESSION_RULES = [
     calc: (s) => {
       const frown = avg(s.mouthFrownLeft, s.mouthFrownRight);
       const browUp = s.browInnerUp ?? 0;
-      const mouthDown = avg(s.mouthLowerDownLeft, s.mouthLowerDownRight);
-      return frown * 0.6 + browUp * 0.3 + (mouthDown ?? 0) * 0.1;
+      const pucker = s.mouthPucker ?? 0;
+      const shrugLower = s.mouthShrugLower ?? 0;
+      
+      const jaw = s.jawOpen ?? 0;
+      const eyeWide = avg(s.eyeWideLeft, s.eyeWideRight);
+      
+      // CRITICAL: Prevent Surprised from triggering Sad.
+      // If the mouth is open or eyes are very wide, you aren't sad.
+      if (jaw > 0.15 || eyeWide > 0.3) return 0;
+      
+      const poutScore = Math.max(pucker, shrugLower);
+      
+      if (frown < 0.05 && poutScore < 0.05 && browUp < 0.05) return 0;
+      return (frown * 3.5) + (poutScore * 3.0) + (browUp * 2.0);
     },
   },
   {
     name: "Angry 😠",
     calc: (s) => {
       const browDown = avg(s.browDownLeft, s.browDownRight);
-      const frown = avg(s.mouthFrownLeft, s.mouthFrownRight);
-      const sneer = avg(s.noseSneerLeft, s.noseSneerRight);
       const press = avg(s.mouthPressLeft, s.mouthPressRight);
-      return browDown * 0.4 + frown * 0.2 + sneer * 0.2 + press * 0.2;
+      const sneer = avg(s.noseSneerLeft, s.noseSneerRight);
+      
+      if (browDown < 0.45) return 0;
+      return (browDown * 1.5) + (press * 1.0) + (sneer * 1.5);
     },
   },
   {
@@ -60,28 +64,10 @@ const EXPRESSION_RULES = [
     calc: (s) => {
       const eyeWide = avg(s.eyeWideLeft, s.eyeWideRight);
       const browUp = s.browInnerUp ?? 0;
-      const browOuter = avg(s.browOuterUpLeft, s.browOuterUpRight);
       const jaw = s.jawOpen ?? 0;
-      if (browUp < 0.2 && eyeWide < 0.2) return 0; // Requires eyes wide or brows up
-      return eyeWide * 0.3 + browUp * 0.3 + browOuter * 0.1 + jaw * 0.3;
-    },
-  },
-  {
-    name: "Fearful 😨",
-    calc: (s) => {
-      const eyeWide = avg(s.eyeWideLeft, s.eyeWideRight);
-      const stretch = avg(s.mouthStretchLeft, s.mouthStretchRight);
-      const browInner = s.browInnerUp ?? 0;
-      return eyeWide * 0.4 + browInner * 0.3 + stretch * 0.3;
-    },
-  },
-  {
-    name: "Disgusted 🤢",
-    calc: (s) => {
-      const sneer = avg(s.noseSneerLeft, s.noseSneerRight);
-      const frown = avg(s.mouthFrownLeft, s.mouthFrownRight);
-      const upperLip = avg(s.mouthUpperUpLeft, s.mouthUpperUpRight);
-      return sneer * 0.5 + frown * 0.2 + upperLip * 0.3;
+      
+      if (eyeWide < 0.2 && jaw < 0.2) return 0;
+      return jaw * 2.0 + eyeWide * 2.0 + browUp * 1.0;
     },
   },
   {
@@ -91,21 +77,9 @@ const EXPRESSION_RULES = [
       const right = s.mouthSmileRight ?? 0;
       const asymmetry = Math.abs(left - right);
       const peak = Math.max(left, right);
-      return peak > 0.2 ? asymmetry * 0.7 + peak * 0.3 : 0;
-    },
-  },
-  {
-    name: "Cheek Puff 😗",
-    calc: (s) => {
-      // boost sensitivity
-      return (s.cheekPuff ?? 0) * 1.5;
-    },
-  },
-  {
-    name: "Tongue Out 😛",
-    calc: (s) => {
-      // Tongue detect is notoriously weak in mediapipe, boost its score heavily
-      return (s.tongueOut ?? 0) * 2.5;
+      
+      if (asymmetry < 0.15 || peak < 0.2) return 0;
+      return asymmetry * 3.0 + peak * 1.0;
     },
   },
   {
@@ -113,27 +87,34 @@ const EXPRESSION_RULES = [
     calc: (s) => {
       const left = s.eyeBlinkLeft ?? 0;
       const right = s.eyeBlinkRight ?? 0;
+      
+      // Simplify Wink drastically.
+      // All we care about is that one eye is blinking significantly more than the other.
       const diff = Math.abs(left - right);
       const maxBlink = Math.max(left, right);
-      return maxBlink > 0.4 ? diff * 0.8 + maxBlink * 0.2 : 0;
+      
+      // If the difference between the two eyes is obvious (>0.25) AND the closed eye is actually closing (>0.4).
+      if (diff < 0.25 || maxBlink < 0.4) return 0;
+      
+      // Give it an absurd multiplier so that if a wink happens, it immediately dominates the scoring entirely.
+      return (diff * 5.0) + (maxBlink * 2.0);
     },
   },
   {
     name: "Thinking 🤔",
     calc: (s) => {
       const browAsym = Math.abs((s.browDownLeft ?? 0) - (s.browDownRight ?? 0));
-      const browOuter = Math.abs(
-        (s.browOuterUpLeft ?? 0) - (s.browOuterUpRight ?? 0),
-      );
       const press = avg(s.mouthPressLeft, s.mouthPressRight);
-      const shrugUpper = s.mouthShrugUpper ?? 0;
-      return browAsym * 0.4 + browOuter * 0.2 + press * 0.2 + shrugUpper * 0.2;
+      const smile = avg(s.mouthSmileLeft, s.mouthSmileRight);
+      
+      if (browAsym < 0.1 || press < 0.1 || smile > 0.1) return 0;
+      return browAsym * 2.5 + press * 1.5;
     },
   },
   {
     name: "Neutral 😐",
-    // Base fallback threshold. Raised slightly so noise doesn't trigger random expressions.
-    calc: () => 0.15,
+    // Set a very strong baseline. Angry or Sad MUST cross 0.5 points to overpower this.
+    calc: () => 0.5, 
   },
 ];
 
@@ -144,9 +125,9 @@ function avg(a, b) {
 
 // ── main classifier ─────────────────────────────────────────────────────────
 /**
- * Classify an array of MediaPipe blendshape categories into expressions.
+ * Classify a dictionary of MediaPipe blendshape categories into expressions.
  *
- * @param {Array<{categoryName: string, score: number}>} blendshapes
+ * @param {Record<string, number>} rawScores
  * @returns {{
  *   finalExpression: string,
  *   confidence: number,
@@ -154,21 +135,15 @@ function avg(a, b) {
  *   rawScores: Record<string, number>
  * }}
  */
-export function classifyExpressions(blendshapes) {
-  // 1. Build a lookup of raw blendshape scores
-  const rawScores = {};
-  blendshapes.forEach((b) => {
-    rawScores[b.categoryName] = b.score;
-  });
-
-  // 2. Score every expression rule
+export function classifyExpressions(rawScores) {
+  // Score every expression rule using the raw dictionary
   const allExpressions = EXPRESSION_RULES.map((rule) => ({
     name: rule.name,
-    score: clamp(rule.calc(rawScores)),
+    score: clamp(rule.calc(rawScores) || 0),
   })).sort((a, b) => b.score - a.score);
 
-  // 3. Pick the winner
-  const best = allExpressions[0];
+  // Pick the winner
+  const best = allExpressions[0] || { name: "Unknown", score: 0 };
 
   return {
     finalExpression: best.name,
