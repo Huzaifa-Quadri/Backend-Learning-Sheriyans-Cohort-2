@@ -1,12 +1,13 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000/api",
+  // baseURL: "http://localhost:3000/api",
+  baseURL: "/api/posts",
   withCredentials: true,
 });
 
 async function getFeed() {
-  const response = await api.get("/posts/feed");
+  const response = await api.get("/feed");
   return response.data;
 }
 
@@ -16,17 +17,17 @@ async function createPost(imageFile, caption) {
   formData.append("image", imageFile);
   formData.append("caption", caption);
 
-  const response = await api.post("/posts/create", formData);
+  const response = await api.post("/create", formData);
   return response.data;
 }
 
 async function likePost(postId) {
-  const response = await api.post(`/posts/like/${postId}`);
+  const response = await api.post(`/like/${postId}`);
   return response.data;
 }
 
 async function unlikePost(postId) {
-  const response = await api.post(`/posts/unlike/${postId}`);
+  const response = await api.post(`/unlike/${postId}`);
   return response.data;
 }
 
