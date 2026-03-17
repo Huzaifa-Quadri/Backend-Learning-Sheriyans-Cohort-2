@@ -1,0 +1,226 @@
+@use "sass:color";
+
+// Theme Variables
+$bg-color: #120a1a; 
+$panel-bg: rgba(25, 15, 35, 0.75); 
+$accent: #9d50bb; 
+$accent-hover: #b566d6;
+$text-primary: #f8fafc;
+$text-secondary: #8c849e;
+$glass-border: rgba(255, 255, 255, 0.06);
+
+.musicPlayerContainer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: $panel-bg;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid $glass-border;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 2rem;
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  color: $text-primary;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  box-sizing: border-box;
+}
+
+// Left: Track Info
+.trackInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 300px; // Fixed width for consistent layout
+
+  .poster {
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    border: 1px solid $glass-border;
+  }
+
+  .details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0;
+      color: $text-primary;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .mood {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: $accent;
+      margin: 0;
+      text-transform: capitalize;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+// Middle: Controls & Progress
+.playerControls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  max-width: 600px;
+  gap: 0.5rem;
+
+  .buttons {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+
+    button {
+      background: none;
+      border: none;
+      color: $text-secondary;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      padding: 0.5rem;
+      border-radius: 50%;
+
+      svg {
+        width: 20px;
+        height: 20px;
+        fill: currentColor;
+      }
+
+      &:hover {
+        color: $text-primary;
+        transform: scale(1.1);
+      }
+
+      &.playPauseBtn {
+        color: $text-primary;
+        background: $accent;
+        width: 44px;
+        height: 44px;
+        box-shadow: 0 4px 15px rgba($accent, 0.4);
+
+        svg {
+          width: 24px;
+          height: 24px;
+          margin-left: 2px; // optical alignment for play icon
+        }
+
+        &.playing svg {
+          margin-left: 0;
+        }
+
+        &:hover {
+          background: $accent-hover;
+          transform: scale(1.05);
+          box-shadow: 0 6px 20px rgba($accent, 0.6);
+        }
+      }
+    }
+  }
+
+  .progressBarContainer {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 0.75rem;
+
+    .time {
+      font-size: 0.75rem;
+      color: $text-secondary;
+      width: 40px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
+      overflow: hidden;
+
+      &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: $text-primary;
+        box-shadow: -400px 0 0 400px $accent;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      &:hover::-webkit-slider-thumb {
+        transform: scale(1.2);
+      }
+    }
+  }
+}
+
+// Right: Volume
+.volumeControl {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  width: 300px;
+  color: $text-secondary;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+
+  input[type="range"] {
+    width: 100px;
+    height: 5px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    overflow: hidden;
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: $text-primary;
+      box-shadow: -100px 0 0 100px $text-secondary;
+      cursor: pointer;
+    }
+
+    &:hover::-webkit-slider-thumb {
+      box-shadow: -100px 0 0 100px $text-primary;
+    }
+  }
+}
+
+// Hide default audio element completely
+.hiddenAudio {
+  display: none;
+}
