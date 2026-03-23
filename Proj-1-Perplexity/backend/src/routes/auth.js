@@ -11,7 +11,13 @@
 import express from "express";
 import { validateRegister, validateLogin } from "../middleware/validation.js";
 import { verifyToken } from "../middleware/auth.js";
-import { refresh, register, login, getMe } from "../controllers/auth.controller.js";
+import {
+  refresh,
+  register,
+  login,
+  getMe,
+  verifyEmailToken,
+} from "../controllers/auth.controller.js";
 
 const router = express.Router();
 
@@ -35,6 +41,13 @@ const router = express.Router();
  * @access - public
  */
 router.post("/register", validateRegister, register);
+
+/**
+ * @route - /api/auth/verify/:token
+ * @description - Verify user email with token
+ * @access - public
+ */
+router.get("/verify/:token", verifyEmailToken);
 
 /**
  * Login User
@@ -94,6 +107,6 @@ router.post("/refresh", verifyToken, refresh);
  * @description - Get current user
  * @access - private
  */
-router.get("/me", verifyToken, getMe);
+router.get("/get-me", verifyToken, getMe);
 
 export default router;

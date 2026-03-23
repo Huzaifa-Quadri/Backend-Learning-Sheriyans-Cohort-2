@@ -21,6 +21,9 @@ export const ERROR_MESSAGES = {
   INTERNAL_ERROR: "Internal server error",
   QUERY_REQUIRED: "Search query is required",
   MESSAGE_REQUIRED: "Message content is required",
+  USER_NOT_VERIFIED: "User not verified",
+  USER_ALREADY_VERIFIED: "User already verified",
+  VERIFICATION_LINK_EXPIRED: "Verification link has expired",
 };
 
 export const API_VERSION = "/api/v1";
